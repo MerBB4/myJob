@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const config: Config = {
   content: [
@@ -9,47 +9,53 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        surface: {
+          DEFAULT: "#fafafa",
+          low: "#f5f5f5",
+          high: "#ebebeb",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+        "on-surface": {
+          DEFAULT: "#171717",
+          variant: "#737373",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#4f46e5",
+          hover: "#4338ca",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        border: "#e5e5e5",
+        chapter: "#475569",
+        knowledge: "#0369a1",
+        "exam-point": "#a16207",
+        "exam-question": "#b91c1c",
+      },
+      fontFamily: {
+        sans: ["Inter", "PingFang SC", "system-ui", "sans-serif"],
+      },
+      fontSize: {
+        xs: "0.6875rem",
+        sm: "0.8125rem",
+        base: "clamp(0.875rem, 0.85rem + 0.2vw, 1rem)",
+        lg: "clamp(1.125rem, 1rem + 0.3vw, 1.25rem)",
+        xl: "clamp(1.5rem, 1.3rem + 0.8vw, 2rem)",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "8px",
+        md: "8px",
+        lg: "12px",
+      },
+      boxShadow: {
+        sm: "0 1px 2px rgba(0,0,0,0.04)",
+        ambient: "0 1px 3px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.03)",
+        elevated: "0 2px 6px rgba(0,0,0,0.05), 0 4px 20px rgba(0,0,0,0.04)",
+      },
+      transitionTimingFunction: {
+        out: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      spacing: {
+        topbar: "48px",
       },
     },
   },
   plugins: [],
-};
-export default config;
+}
+export default config
