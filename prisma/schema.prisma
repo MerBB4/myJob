@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Subject {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(100)
+  chapters  Chapter[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Chapter {
+  id        Int         @id @default(autoincrement())
+  subjectId Int
+  subject   Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  title     String      @db.VarChar(200)
+  order     Int         @default(0)
+  knowledge Knowledge[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Knowledge {
+  id           Int        @id @default(autoincrement())
+  chapterId    Int
+  chapter      Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  name         String     @db.VarChar(300)
+  mnemonic     String?    @db.VarChar(500)
+  detail       String?    @db.Text
+  distinctions Json?
+  formulas     Json?
+  mindMap      String?    @db.VarChar(500)
+  examPoints   ExamPoint[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model ExamPoint {
+  id            Int             @id @default(autoincrement())
+  knowledgeId   Int
+  knowledge     Knowledge       @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  description   String          @db.Text
+  category      String?         @db.VarChar(50)
+  examQuestions ExamQuestion[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model ExamQuestion {
+  id          Int       @id @default(autoincrement())
+  examPointId Int
+  examPoint   ExamPoint @relation(fields: [examPointId], references: [id], onDelete: Cascade)
+  type        String    @db.VarChar(20)
+  image       String?   @db.VarChar(500)
+  content     String?   @db.Text
+  answer      String?   @db.VarChar(200)
+  analysis    String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model AppConfig {
+  id    Int    @id @default(autoincrement())
+  key   String @unique @db.VarChar(100)
+  value String @db.Text
+}

@@ -1,0 +1,92 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+Thumbs.db
+Desktop.ini
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env
+.env.local
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# prisma
+/src/generated/prisma
+
+# superpowers brainstorm files
+.superpowers/
+
+# claude session files
+claude/
+claude-*
+ecc-*
+.ses
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS junk
+*.tmp
+*.log
+*.LOG
+
+# installer files
+*.exe
+*.msi
+is-*.tmp/
+windsurf-*
+WindsurfSetup-*
+CC Switch-*/
+Steam++/
+Tencent/
+pub/
+temp_profile_*/
+system-commandline-*/
+update-check/
+version.dat.*
+unleash-*
+
+# database files
+*.db
+*.db-shm
+*.db-wal
+*.db.ses
+*.db-journal
+
+# random
+*.jpeg
+*.png
+*.jsonl
+ecc-repo/
+geek64.exe
+{*} - OProcSessId.dat
