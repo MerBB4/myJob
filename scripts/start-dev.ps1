@@ -1,5 +1,5 @@
 # 考编笔记系统 - 启动开发环境 (PowerShell)
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $host.UI.RawUI.WindowTitle = "考编笔记 - Dev Server"
 
 Write-Host "============================================" -ForegroundColor Cyan
@@ -14,25 +14,9 @@ $ProjectRoot = Get-Location
 # PID 文件
 $PidFile = "$env:TEMP\exam-note-dev.pid"
 
-# 1. 检查 MySQL
-Write-Host "[1/3] 检查 MySQL 连接..." -ForegroundColor Yellow
-try {
-    $mysqlResult = & mysqladmin -u root -proot ping -h 127.0.0.1 -P 3306 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "[ OK ] MySQL 连接正常" -ForegroundColor Green
-    } else {
-        Write-Host "[警告] MySQL 未响应" -ForegroundColor Magenta
-        Write-Host "       请确保 MySQL 服务已启动 (net start MySQL)" -ForegroundColor Magenta
-        $continue = Read-Host "是否继续启动？(y/n)"
-        if ($continue -ne "y") { exit 1 }
-    }
-} catch {
-    Write-Host "[警告] 未找到 mysqladmin，跳过数据库检查" -ForegroundColor Magenta
-}
-
-# 2. 检查依赖
+# 1. 检查依赖
 Write-Host ""
-Write-Host "[2/3] 检查依赖..." -ForegroundColor Yellow
+Write-Host "[1/2] 检查依赖..." -ForegroundColor Yellow
 if (-not (Test-Path "node_modules")) {
     Write-Host "[信息] 正在安装依赖..." -ForegroundColor Cyan
     npm install
@@ -45,9 +29,9 @@ if (-not (Test-Path "node_modules")) {
     Write-Host "[ OK ] node_modules 已存在" -ForegroundColor Green
 }
 
-# 3. 清理旧进程
+# 2. 清理旧进程
 Write-Host ""
-Write-Host "[3/3] 清理旧进程并启动..." -ForegroundColor Yellow
+Write-Host "[2/2] 清理旧进程并启动..." -ForegroundColor Yellow
 
 # 先停掉旧进程
 if (Test-Path $PidFile) {

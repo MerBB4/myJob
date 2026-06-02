@@ -10,7 +10,7 @@ $PidFile = "$env:TEMP\exam-note-dev.pid"
 $killed = $false
 
 # 1. 通过 PID 文件终止
-Write-Host "[1/3] 通过 PID 文件终止..." -ForegroundColor Yellow
+Write-Host "[1/2] 通过 PID 文件终止..." -ForegroundColor Yellow
 if (Test-Path $PidFile) {
     $oldPid = Get-Content $PidFile
     try {
@@ -27,7 +27,7 @@ if (Test-Path $PidFile) {
 
 # 2. 通过端口 3000 查找
 Write-Host ""
-Write-Host "[2/3] 检查端口 3000..." -ForegroundColor Yellow
+Write-Host "[2/2] 检查端口 3000..." -ForegroundColor Yellow
 $portProcesses = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue
 foreach ($conn in $portProcesses) {
     Write-Host "[信息] 发现端口 3000 占用进程 (PID: $($conn.OwningProcess))" -ForegroundColor Gray
@@ -38,18 +38,6 @@ foreach ($conn in $portProcesses) {
     } catch {
         Write-Host "[错误] 无法终止进程 $($conn.OwningProcess)" -ForegroundColor Red
     }
-}
-
-# 3. 清理残留 node 进程
-Write-Host ""
-Write-Host "[3/3] 清理 node.exe 进程..." -ForegroundColor Yellow
-$nodeProcesses = Get-Process -Name "node" -ErrorAction SilentlyContinue
-foreach ($proc in $nodeProcesses) {
-    try {
-        Stop-Process -Id $proc.Id -Force -ErrorAction Stop
-        Write-Host "[信息] 已终止 node.exe (PID: $($proc.Id))" -ForegroundColor Gray
-        $killed = $true
-    } catch {}
 }
 
 Write-Host ""

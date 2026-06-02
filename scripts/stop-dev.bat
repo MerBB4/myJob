@@ -11,7 +11,7 @@ set KILLED=0
 echo Killing processes on port 3000...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000.*LISTENING" 2^>nul') do (
     taskkill /pid %%a /f /t >nul 2>&1
-    if not errorlevel 1 (
+    if !errorlevel! equ 0 (
         echo [ OK ] Killed PID: %%a
         set KILLED=1
     )

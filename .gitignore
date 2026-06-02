@@ -68,9 +68,6 @@ vscode-typescript/
 tmp*/
 *.log
 *.LOG
-.DS_Store
-Thumbs.db
-Desktop.ini
 
 # installer / updater leftovers
 *.exe
