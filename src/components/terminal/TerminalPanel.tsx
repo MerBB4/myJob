@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Terminal } from 'lucide-react'
+import { useAppStore } from '@/lib/store'
+import { Terminal, X } from 'lucide-react'
 import '@xterm/xterm/css/xterm.css'
 
 export function TerminalPanel() {
@@ -10,7 +11,9 @@ export function TerminalPanel() {
   const xtermRef = useRef<unknown>(null)
   const fitAddonRef = useRef<unknown>(null)
   const wsRef = useRef<WebSocket | null>(null)
+  const observerRef = useRef<ResizeObserver | null>(null)
   const [connected, setConnected] = useState(false)
+  const toggleTerminal = useAppStore((s) => s.toggleTerminal)
 
   useEffect(() => {
     let cleanedUp = false
@@ -30,22 +33,6 @@ export function TerminalPanel() {
           foreground: '#cccccc',
           cursor: '#ffffff',
           selectionBackground: '#264f78',
-          black: '#000000',
-          red: '#cd3131',
-          green: '#0dbc79',
-          yellow: '#e5e510',
-          blue: '#2472c8',
-          magenta: '#bc3fbc',
-          cyan: '#11a8cd',
-          white: '#e5e5e5',
-          brightBlack: '#666666',
-          brightRed: '#f14c4c',
-          brightGreen: '#23d18b',
-          brightYellow: '#f5f543',
-          brightBlue: '#3b8eea',
-          brightMagenta: '#d670d6',
-          brightCyan: '#29b8db',
-          brightWhite: '#ffffff',
         },
         allowProposedApi: true,
       })
@@ -57,9 +44,15 @@ export function TerminalPanel() {
       fitAddonRef.current = fitAddon
 
       term.open(containerRef.current)
-      fitAddon.fit()
 
-      term.writeln('\x1b[1;37m考编笔记 终端\x1b[0m')
+      // ResizeObserver ensures fit() only runs when container has real dimensions
+      const observer = new ResizeObserver(() => {
+        try { fitAddon.fit() } catch { /* container not sized yet */ }
+      })
+      observer.observe(containerRef.current)
+      observerRef.current = observer
+
+      term.writeln('\x1b[1;37m=== 考编笔记 终端 ===\x1b[0m')
       term.writeln('')
 
       // Try WebSocket connection
@@ -67,7 +60,6 @@ export function TerminalPanel() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
         const wsUrl = `${protocol}//${window.location.host}/ws`
         const ws = new WebSocket(wsUrl)
-
         wsRef.current = ws
 
         ws.onopen = () => {
@@ -85,7 +77,7 @@ export function TerminalPanel() {
         }
 
         ws.onerror = () => {
-          term.writeln('\x1b[31m无法连接到终端服务\x1b[0m')
+          term.writeln('\x1b[31mWebSocket 未就绪，请点右上角打开本地CMD\x1b[0m')
         }
 
         term.onData((data: string) => {
@@ -94,19 +86,7 @@ export function TerminalPanel() {
           }
         })
       } catch {
-        term.writeln('\x1b[31mWebSocket不可用，请使用下方按钮打开系统CMD\x1b[0m')
-      }
-
-      // Handle resize
-      const handleResize = () => {
-        if (fitAddonRef.current && typeof (fitAddonRef.current as { fit: () => void }).fit === 'function') {
-          (fitAddonRef.current as { fit: () => void }).fit()
-        }
-      }
-      window.addEventListener('resize', handleResize)
-
-      return () => {
-        window.removeEventListener('resize', handleResize)
+        term.writeln('\x1b[31mWebSocket 不可用，请使用"打开CMD"启动本地终端\x1b[0m')
       }
     }
 
@@ -114,6 +94,9 @@ export function TerminalPanel() {
 
     return () => {
       cleanedUp = true
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
       if (xtermRef.current && typeof (xtermRef.current as { dispose: () => void }).dispose === 'function') {
         (xtermRef.current as { dispose: () => void }).dispose()
       }
@@ -123,38 +106,37 @@ export function TerminalPanel() {
     }
   }, [])
 
-  const openSystemCmd = () => {
-    window.open('cmd://', '_blank')
-  }
-
   return (
-    <div className="h-full flex flex-col bg-[#1e1e1e]">
-      {/* Header bar */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-[#2d2d2d] border-b border-[#3c3c3c] shrink-0">
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-          <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-          <div className="w-3 h-3 rounded-full bg-[#27ca40]" />
-          <span className="text-xs text-slate-400 ml-2">终端</span>
+    <div className="h-full flex flex-col bg-[#1e1e1e] min-h-0">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-3 py-1 bg-[#2d2d2d] border-b border-[#3c3c3c] shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">终端</span>
+          {connected && <span className="text-[10px] text-green-400">已连接</span>}
         </div>
-        <div className="flex items-center gap-1">
-          {connected && (
-            <span className="text-[10px] text-green-400">已连接</span>
-          )}
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             className="text-xs text-slate-400 hover:text-white hover:bg-[#3c3c3c] h-6"
-            onClick={openSystemCmd}
+            onClick={() => window.open('cmd://', '_blank')}
           >
             <Terminal className="w-3 h-3 mr-1" />
             打开CMD
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5 text-slate-400 hover:text-white"
+            onClick={toggleTerminal}
+          >
+            <X className="w-3 h-3" />
           </Button>
         </div>
       </div>
 
       {/* Terminal container */}
-      <div ref={containerRef} className="flex-1" />
+      <div ref={containerRef} className="flex-1 min-h-0" />
     </div>
   )
 }

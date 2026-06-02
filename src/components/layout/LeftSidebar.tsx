@@ -5,7 +5,7 @@ import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Image, Shuffle } from 'lucide-react'
+import { Image, Shuffle, Terminal } from 'lucide-react'
 import { useState } from 'react'
 
 export function LeftSidebar() {
@@ -35,7 +35,7 @@ export function LeftSidebar() {
   const selSub = subjects?.find((s: { id: number }) => s.id === selectedSubjectId) as { chapters?: { id: number; title: string }[] } | undefined
 
   return (
-    <div className="w-[190px] h-full bg-slate-50 border-r flex flex-col">
+    <div className="h-full bg-slate-50 border-r flex flex-col" style={{ width: 190, minWidth: 160, maxWidth: 320, resize: 'horizontal', overflow: 'auto' }}>
       <div className="p-3 border-b">
         <h2 className="text-xs font-semibold text-slate-500 uppercase mb-2">学科分类</h2>
         {subjects?.map((s: { id: number; name: string; knowledgeCount: number }) => (
@@ -68,8 +68,11 @@ export function LeftSidebar() {
         <Button variant="outline" size="sm" className="w-full justify-start text-xs mb-1" onClick={() => setViewMode('quiz')}>
           <Shuffle className="w-3 h-3 mr-1" /> 随机刷题
         </Button>
-        <Button variant="outline" size="sm" className="w-full justify-start text-xs" onClick={() => useAppStore.getState().setShowOcrPanel(true)}>
+        <Button variant="outline" size="sm" className="w-full justify-start text-xs mb-1" onClick={() => useAppStore.getState().setShowOcrPanel(true)}>
           <Image className="w-3 h-3 mr-1" /> 截图导入
+        </Button>
+        <Button variant="outline" size="sm" className="w-full justify-start text-xs" onClick={() => useAppStore.getState().toggleTerminal()}>
+          <Terminal className="w-3 h-3 mr-1" /> 终端
         </Button>
       </div>
     </div>

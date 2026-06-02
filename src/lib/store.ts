@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 
 export type ViewMode = 'graph' | 'list' | 'quiz'
-export type RightPanelMode = 'ai' | 'terminal'
 
 interface AppState {
   selectedSubjectId: number | null
@@ -13,8 +12,8 @@ interface AppState {
   viewMode: ViewMode
   setViewMode: (mode: ViewMode) => void
 
-  rightPanelMode: RightPanelMode
-  setRightPanelMode: (mode: RightPanelMode) => void
+  showTerminal: boolean
+  toggleTerminal: () => void
 
   showOcrPanel: boolean
   setShowOcrPanel: (show: boolean) => void
@@ -30,8 +29,8 @@ export const useAppStore = create<AppState>((set) => ({
   viewMode: 'graph',
   setViewMode: (mode) => set({ viewMode: mode }),
 
-  rightPanelMode: 'ai',
-  setRightPanelMode: (mode) => set({ rightPanelMode: mode }),
+  showTerminal: false,
+  toggleTerminal: () => set((s) => ({ showTerminal: !s.showTerminal })),
 
   showOcrPanel: false,
   setShowOcrPanel: (show) => set({ showOcrPanel: show }),

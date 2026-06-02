@@ -43,6 +43,10 @@ export function AiChat() {
           setProvider(data.ai_provider || 'deepseek')
           setModel(data.ai_model || 'deepseek-chat')
           setBaseUrl(data.ai_base_url || '')
+          // Auto-show settings panel if no API key configured yet
+          if (!data.ai_api_key) {
+            setShowSettings(true)
+          }
         }
       } catch {
         // Config not critical, silent fail
