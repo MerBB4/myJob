@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
   try {
     const fd = await req.formData()
-    const file = fd.get('file') as File | null
+    const file = fd.get('image') as File | null
     if (!file) return NextResponse.json({ error: '未提供图片文件' }, { status: 400 })
     const buffer = Buffer.from(await file.arrayBuffer())
     const Tesseract = await import('tesseract.js')

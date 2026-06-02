@@ -3,9 +3,24 @@ import { spawn } from 'node-pty'
 import { createServer } from 'http'
 
 const PORT = 3001
+const HOST = '127.0.0.1'
 const isWindows = process.platform === 'win32'
 const shell = isWindows ? 'powershell.exe' : (process.env.SHELL || 'bash')
 const shellArgs = isWindows ? [] : []
+
+// Only pass safe environment variables to the shell
+const SAFE_ENV_KEYS = [
+  'PATH', 'HOME', 'USER', 'USERNAME', 'TERM', 'SHELL',
+  'SystemRoot', 'TEMP', 'TMP', 'TMPDIR',
+  'LANG', 'LC_ALL', 'COLORTERM',
+  'APPDATA', 'LOCALAPPDATA', 'ProgramFiles', 'ProgramData',
+]
+const safeEnv = {}
+for (const key of SAFE_ENV_KEYS) {
+  if (process.env[key] !== undefined) {
+    safeEnv[key] = process.env[key]
+  }
+}
 
 const server = createServer((req, res) => {
   res.writeHead(200)
@@ -22,7 +37,7 @@ wss.on('connection', (ws) => {
     cols: 80,
     rows: 24,
     cwd: process.cwd(),
-    env: { ...process.env, TERM: 'xterm-color' },
+    env: { ...safeEnv, TERM: 'xterm-color' },
   })
 
   pty.onData((data) => {
@@ -43,6 +58,6 @@ wss.on('connection', (ws) => {
   })
 })
 
-server.listen(PORT, () => {
-  console.log(`[terminal] ws server on ws://localhost:${PORT}`)
+server.listen(PORT, HOST, () => {
+  console.log(`[terminal] ws server on ws://${HOST}:${PORT}`)
 })

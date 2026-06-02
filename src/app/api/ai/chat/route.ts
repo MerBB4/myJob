@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.AI_BASE_URL || 'https://api.deepseek.com'
   const model = process.env.AI_MODEL || 'deepseek-chat'
 
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 30_000)
+
   try {
     const res = await fetch(`${baseUrl}/v1/chat/completions`, {
       method: 'POST',
@@ -26,15 +29,20 @@ export async function POST(req: NextRequest) {
         ],
         temperature: 0.7, max_tokens: 2000,
       }),
+      signal: controller.signal,
     })
     if (!res.ok) {
       const err = await res.text()
-      return NextResponse.json({ error: `AI API 错误: ${err}` }, { status: res.status })
+      console.error('AI API upstream error:', res.status, err)
+      return NextResponse.json({ error: 'AI API 请求失败' }, { status: 502 })
     }
     const data = await res.json()
-    const reply = data.choices?.[0]?.message?.content || '无响应'
+    const reply = data.choices?.[0]?.message?.content ?? '无响应'
     return NextResponse.json({ reply })
-  } catch {
+  } catch (e) {
+    console.error('AI chat error:', e)
     return NextResponse.json({ error: 'AI 调用失败' }, { status: 500 })
+  } finally {
+    clearTimeout(timeout)
   }
 }

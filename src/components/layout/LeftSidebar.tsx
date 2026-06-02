@@ -1,15 +1,17 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export function LeftSidebar() {
   const { selectedSubjectId, selectedChapterId, setSelectedChapterId } = useAppStore()
   const [newChapter, setNewChapter] = useState('')
+  const queryClient = useQueryClient()
 
   const { data: subjects, refetch } = useQuery({
     queryKey: ['subjects'],
@@ -29,6 +31,20 @@ export function LeftSidebar() {
     })
     setNewChapter('')
     refetch()
+  }
+
+  const deleteChapter = async (id: number, title: string) => {
+    if (!window.confirm(`确定删除章节"${title}"？\n将同时删除该章节下的所有知识点、考点和真题。`)) return
+    try {
+      const res = await fetch(`/api/chapters/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      toast.success('章节已删除')
+      if (selectedChapterId === id) setSelectedChapterId(null)
+      refetch()
+      queryClient.invalidateQueries({ queryKey: ['knowledge'] })
+    } catch {
+      toast.error('删除章节失败')
+    }
   }
 
   if (!selectedSubjectId) {
@@ -54,17 +70,25 @@ export function LeftSidebar() {
       {/* Chapter list */}
       <div className="flex-1 overflow-auto py-1">
         {selSub?.chapters?.map((c: { id: number; title: string }) => (
-          <button
-            key={c.id}
-            onClick={() => setSelectedChapterId(c.id)}
-            className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-              selectedChapterId === c.id
-                ? 'bg-surface-high text-on-surface font-medium'
-                : 'text-on-surface-variant hover:bg-surface-high/50 hover:text-on-surface'
-            }`}
-          >
-            {c.title}
-          </button>
+          <div key={c.id} className="group relative">
+            <button
+              onClick={() => setSelectedChapterId(c.id)}
+              className={`w-full text-left px-4 py-2 pr-8 text-sm transition-colors interactive-list-item ${
+                selectedChapterId === c.id
+                  ? 'bg-surface-high text-on-surface font-medium'
+                  : 'text-on-surface-variant hover:bg-surface-high/50 hover:text-on-surface'
+              }`}
+            >
+              {c.title}
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); deleteChapter(c.id, c.title) }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:text-red-500 text-on-surface-variant"
+              title="删除章节"
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          </div>
         ))}
         {(!selSub?.chapters || selSub.chapters.length === 0) && (
           <p className="px-4 py-8 text-xs text-on-surface-variant text-center">暂无章节</p>

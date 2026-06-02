@@ -20,14 +20,13 @@ export default function Home() {
         <RightPanel />
       </div>
 
-      {showTerminal && (
-        <div
-          className="border-t shrink-0 animate-slide-up"
-          style={{ height: 240, minHeight: 140, maxHeight: 500, resize: 'vertical', overflow: 'hidden' }}
-        >
-          <TerminalPanel />
-        </div>
-      )}
+      {/* Terminal: kept mounted, CSS transition for show/hide */}
+      <div
+        className={`border-t shrink-0 transition-all duration-200 ${showTerminal ? 'animate-slide-up' : 'h-0 overflow-hidden border-transparent'}`}
+        style={showTerminal ? { height: 240, minHeight: 140, maxHeight: 500, resize: 'vertical', overflow: 'hidden' } : undefined}
+      >
+        <TerminalPanel />
+      </div>
     </div>
   )
 }

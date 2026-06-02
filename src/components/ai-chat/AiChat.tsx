@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useAnimateExit } from '@/lib/use-animate-exit'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Send, Loader2, Settings, X } from 'lucide-react'
+import { Send, Loader2, Settings, X, MessageSquare } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface Message {
+  id: string
   role: 'user' | 'assistant'
   content: string
 }
@@ -17,6 +19,9 @@ export function AiChat() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const { show: showSettingsPanel, animClass: settingsAnim } = useAnimateExit(
+    showSettings, 'animate-slide-down', 'animate-slide-out-up'
+  )
   const [model, setModel] = useState('deepseek-chat')
   const [baseUrl, setBaseUrl] = useState('https://api.deepseek.com')
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -31,8 +36,8 @@ export function AiChat() {
           setModel(data.ai_model || 'deepseek-chat')
           setBaseUrl(data.ai_base_url || 'https://api.deepseek.com')
         }
-      } catch {
-        // silent
+      } catch (e) {
+        console.warn('Failed to load AI config:', e)
       }
     }
     loadConfig()
@@ -41,7 +46,10 @@ export function AiChat() {
   // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      const viewport = scrollRef.current.parentElement
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight
+      }
     }
   }, [messages])
 
@@ -49,7 +57,7 @@ export function AiChat() {
     const text = input.trim()
     if (!text || isLoading) return
 
-    const userMsg: Message = { role: 'user', content: text }
+    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text }
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setIsLoading(true)
@@ -67,11 +75,11 @@ export function AiChat() {
       }
 
       const data = await res.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: data.reply }])
     } catch (error: unknown) {
       const errMsg = error instanceof Error ? error.message : '请求失败'
       toast.error(errMsg)
-      setMessages(prev => [...prev, { role: 'assistant', content: `[错误] ${errMsg}` }])
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: `[错误] ${errMsg}` }])
     } finally {
       setIsLoading(false)
     }
@@ -91,7 +99,8 @@ export function AiChat() {
       })
       toast.success('配置已保存')
       setShowSettings(false)
-    } catch {
+    } catch (e) {
+      console.error('Config save failed:', e)
       toast.error('保存配置失败')
     }
   }
@@ -107,8 +116,8 @@ export function AiChat() {
       </div>
 
       {/* Settings */}
-      {showSettings && (
-        <div className="p-3 border-b bg-surface space-y-2.5 animate-slide-down">
+      {showSettingsPanel && (
+        <div className={`p-3 border-b bg-surface space-y-2.5 ${settingsAnim}`}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-on-surface">设置</span>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowSettings(false)}>
@@ -150,8 +159,8 @@ export function AiChat() {
               <p className="text-xs mt-1">API Key 请在 .env 中配置</p>
             </div>
           )}
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-[85%] rounded-lg px-3 py-2 text-sm leading-relaxed ${
                   msg.role === 'user'

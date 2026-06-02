@@ -5,23 +5,37 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-  const { name } = await req.json()
-  if (!name || !name.trim()) {
-    return NextResponse.json({ error: '学科名不能为空' }, { status: 400 })
+  try {
+    const { id } = await params
+    const numId = parseInt(id)
+    if (isNaN(numId)) return NextResponse.json({ error: '无效的ID' }, { status: 400 })
+    const { name } = await req.json()
+    if (!name || !name.trim()) {
+      return NextResponse.json({ error: '学科名不能为空' }, { status: 400 })
+    }
+    const subject = await prisma.subject.update({
+      where: { id: numId },
+      data: { name: name.trim() },
+    })
+    return NextResponse.json(subject)
+  } catch (e) {
+    console.error('PUT /api/subjects/[id] error:', e)
+    return NextResponse.json({ error: '更新学科失败' }, { status: 500 })
   }
-  const subject = await prisma.subject.update({
-    where: { id: parseInt(id) },
-    data: { name: name.trim() },
-  })
-  return NextResponse.json(subject)
 }
 
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-  await prisma.subject.delete({ where: { id: parseInt(id) } })
-  return NextResponse.json({ ok: true })
+  try {
+    const { id } = await params
+    const numId = parseInt(id)
+    if (isNaN(numId)) return NextResponse.json({ error: '无效的ID' }, { status: 400 })
+    await prisma.subject.delete({ where: { id: numId } })
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    console.error('DELETE /api/subjects/[id] error:', e)
+    return NextResponse.json({ error: '删除学科失败' }, { status: 500 })
+  }
 }

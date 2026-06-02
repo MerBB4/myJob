@@ -12,10 +12,8 @@ interface KnowledgeDetailProps {
 }
 
 export function KnowledgeDetail({ knowledge, onClose }: KnowledgeDetailProps) {
-  const questionsCount = knowledge.examPoints?.reduce((acc, ep) => acc + (ep.examQuestions?.length ?? 0), 0) ?? 0
-
   return (
-    <div className="w-[320px] h-full border-l bg-white overflow-hidden flex flex-col shrink-0">
+    <div className="w-[320px] h-full border-l bg-white overflow-hidden flex flex-col shrink-0 animate-slide-in-right">
       <div className="flex items-center justify-between p-3 border-b">
         <h3 className="font-semibold text-sm truncate flex-1">{knowledge.name}</h3>
         <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={onClose}>

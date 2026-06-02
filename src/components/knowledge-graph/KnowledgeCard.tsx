@@ -24,7 +24,7 @@ export function KnowledgeCard({ knowledge, onClick }: KnowledgeCardProps) {
 
   return (
     <Card
-      className="p-4 cursor-pointer hover:shadow-md transition-shadow border-l-4"
+      className="p-4 cursor-pointer interactive-card interactive-press border-l-4"
       style={{ borderLeftColor: levelColors.knowledge }}
       onClick={onClick}
     >

@@ -9,19 +9,26 @@ const OcrPanel = dynamic(() => import('@/components/ocr-panel/OcrPanel').then(m 
 export function MainContent() {
   const { viewMode, showOcrPanel } = useAppStore()
 
-  if (showOcrPanel) {
-    return (
-      <div className="flex-1 h-full overflow-auto">
-        <OcrPanel />
-      </div>
-    )
-  }
-
   return (
-    <div className="flex-1 h-full overflow-auto">
+    <div className="flex-1 h-full overflow-auto relative">
       {viewMode === 'graph' && <KnowledgeGraph />}
-      {viewMode === 'list' && <div className="flex items-center justify-center h-full text-slate-400">列表模式（后续实现）</div>}
-      {viewMode === 'quiz' && <div className="flex items-center justify-center h-full text-slate-400">刷题模式（后续实现）</div>}
+      {viewMode === 'list' && (
+        <div className="flex items-center justify-center h-full text-on-surface-variant animate-fade-in">
+          列表模式（后续实现）
+        </div>
+      )}
+      {viewMode === 'quiz' && (
+        <div className="flex items-center justify-center h-full text-on-surface-variant animate-fade-in">
+          刷题模式（后续实现）
+        </div>
+      )}
+
+      {/* OCR overlay — covers main content when active */}
+      {showOcrPanel && (
+        <div className="absolute inset-0 z-[var(--z-overlay)] bg-surface animate-slide-up">
+          <OcrPanel />
+        </div>
+      )}
     </div>
   )
 }

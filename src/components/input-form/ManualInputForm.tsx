@@ -11,11 +11,13 @@ import { toast } from 'sonner'
 import { Plus, Trash2, Save } from 'lucide-react'
 
 interface DistinctionItem {
+  id: string
   title: string
   content: string
 }
 
 interface FormulaItem {
+  id: string
   name: string
   formula: string
 }
@@ -27,12 +29,15 @@ export function ManualInputForm() {
   const [name, setName] = useState('')
   const [mnemonic, setMnemonic] = useState('')
   const [detail, setDetail] = useState('')
-  const [distinctions, setDistinctions] = useState<DistinctionItem[]>([{ title: '', content: '' }])
-  const [formulas, setFormulas] = useState<FormulaItem[]>([{ name: '', formula: '' }])
+  const [distinctions, setDistinctions] = useState<DistinctionItem[]>([{ id: 'd0', title: '', content: '' }])
+  const [formulas, setFormulas] = useState<FormulaItem[]>([{ id: 'f0', name: '', formula: '' }])
+  const [nextDistId, setNextDistId] = useState(1)
+  const [nextFormId, setNextFormId] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const addDistinction = () => {
-    setDistinctions(prev => [...prev, { title: '', content: '' }])
+    setDistinctions(prev => [...prev, { id: `d${nextDistId}`, title: '', content: '' }])
+    setNextDistId(n => n + 1)
   }
 
   const removeDistinction = (index: number) => {
@@ -44,7 +49,8 @@ export function ManualInputForm() {
   }
 
   const addFormula = () => {
-    setFormulas(prev => [...prev, { name: '', formula: '' }])
+    setFormulas(prev => [...prev, { id: `f${nextFormId}`, name: '', formula: '' }])
+    setNextFormId(n => n + 1)
   }
 
   const removeFormula = (index: number) => {
@@ -59,8 +65,10 @@ export function ManualInputForm() {
     setName('')
     setMnemonic('')
     setDetail('')
-    setDistinctions([{ title: '', content: '' }])
-    setFormulas([{ name: '', formula: '' }])
+    setDistinctions([{ id: 'd0', title: '', content: '' }])
+    setFormulas([{ id: 'f0', name: '', formula: '' }])
+    setNextDistId(1)
+    setNextFormId(1)
   }
 
   const handleSubmit = async () => {
@@ -155,7 +163,7 @@ export function ManualInputForm() {
           </div>
           <div className="space-y-2">
             {distinctions.map((d, i) => (
-              <div key={i} className="flex gap-2 items-start">
+              <div key={d.id} className="flex gap-2 items-start">
                 <div className="flex-1 space-y-1">
                   <Input
                     placeholder="标题"
@@ -193,7 +201,7 @@ export function ManualInputForm() {
           </div>
           <div className="space-y-2">
             {formulas.map((f, i) => (
-              <div key={i} className="flex gap-2 items-start">
+              <div key={f.id} className="flex gap-2 items-start">
                 <div className="flex-1 space-y-1">
                   <Input
                     placeholder="公式名称"

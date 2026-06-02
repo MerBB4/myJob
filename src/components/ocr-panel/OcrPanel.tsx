@@ -19,7 +19,7 @@ interface CorrectionWithStatus extends AiCorrection {
 }
 
 export function OcrPanel() {
-  const { setShowOcrPanel } = useAppStore()
+  const { setShowOcrPanel, selectedChapterId } = useAppStore()
   const [stage, setStage] = useState<Stage>('upload')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [ocrText, setOcrText] = useState('')
@@ -31,23 +31,6 @@ export function OcrPanel() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const dropRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
-
-  // Paste handler
-  useEffect(() => {
-    const handlePaste = (e: ClipboardEvent) => {
-      const items = e.clipboardData?.items
-      if (!items) return
-      for (const item of Array.from(items)) {
-        if (item.type.startsWith('image/')) {
-          const file = item.getAsFile()
-          if (file) handleFile(file)
-          break
-        }
-      }
-    }
-    document.addEventListener('paste', handlePaste)
-    return () => document.removeEventListener('paste', handlePaste)
-  }, [])
 
   const handleFile = useCallback(async (file: File) => {
     const reader = new FileReader()
@@ -77,6 +60,23 @@ export function OcrPanel() {
       setIsProcessing(false)
     }
   }, [])
+
+  // Paste handler
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items
+      if (!items) return
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile()
+          if (file) handleFile(file)
+          break
+        }
+      }
+    }
+    document.addEventListener('paste', handlePaste)
+    return () => document.removeEventListener('paste', handlePaste)
+  }, [handleFile])
 
   const simulateAiReview = (text: string) => {
     // Demo: pattern-based AI simulation corrections
@@ -191,6 +191,10 @@ export function OcrPanel() {
       toast.error('请输入标题')
       return
     }
+    if (!selectedChapterId) {
+      toast.error('请先选择一个章节')
+      return
+    }
 
     setIsSaving(true)
     try {
@@ -198,11 +202,15 @@ export function OcrPanel() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          chapterId: selectedChapterId,
           name: finalName.trim(),
           detail: finalContent.trim(),
         }),
       })
-      if (!res.ok) throw new Error('保存失败')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || '保存失败')
+      }
       toast.success('知识条目保存成功')
       setShowOcrPanel(false)
     } catch (error: unknown) {
@@ -226,7 +234,7 @@ export function OcrPanel() {
         <div className="flex-1 flex items-center justify-center p-6">
           <div
             ref={dropRef}
-            className={`w-full max-w-md border-2 border-dashed rounded-xl p-12 text-center transition-colors ${isDragging ? 'border-sky-500 bg-sky-50' : 'border-slate-300 hover:border-slate-400'}`}
+            className={`w-full max-w-md border-2 border-dashed rounded-xl p-12 text-center interactive-dropzone ${isDragging ? 'active' : 'border-slate-300'}`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
