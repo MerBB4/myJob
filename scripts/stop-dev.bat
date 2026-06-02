@@ -1,6 +1,5 @@
 @echo off
-chcp 65001 >nul 2>&1
-title 考编笔记 - Stop Server
+title KaoBian Note - Stop Server
 
 echo ============================================
 echo   KaoBian Note - Stop Dev Server
@@ -9,11 +8,10 @@ echo.
 
 set KILLED=0
 
-:: 杀掉端口 3000 上的进程
 echo Killing processes on port 3000...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000.*LISTENING" 2^>nul') do (
     taskkill /pid %%a /f /t >nul 2>&1
-    if !errorlevel! equ 0 (
+    if not errorlevel 1 (
         echo [ OK ] Killed PID: %%a
         set KILLED=1
     )
