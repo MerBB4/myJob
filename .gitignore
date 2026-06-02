@@ -90,3 +90,6 @@ unleash-*
 ecc-repo/
 geek64.exe
 {*} - OProcSessId.dat
+
+# setup logs
+Setup Log *.txt
