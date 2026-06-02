@@ -43,38 +43,108 @@ next-env.d.ts
 # superpowers brainstorm files
 .superpowers/
 
-# claude session files
+# claude session / ECC session files
 claude/
 claude-*
-ecc-*
 .ses
+.FileLog/
 
-# IDE
+# IDE / editors
 .vscode/
 .idea/
 *.swp
 *.swo
+windsurf/
+windsurf-*/
+windsurf-stable-*/
+trae-user-x64/
+kiro-stable-user-x64/
+vscode-stable-system-x64/
+vscode-typescript/
 
 # OS junk
 *.tmp
+.tmp*/
+tmp*/
 *.log
 *.LOG
+.DS_Store
+Thumbs.db
+Desktop.ini
 
-# installer files
+# installer / updater leftovers
 *.exe
 *.msi
 is-*.tmp/
-windsurf-*
 WindsurfSetup-*
 CC Switch-*/
-Steam++/
-Tencent/
-pub/
-temp_profile_*/
-system-commandline-*/
 update-check/
 version.dat.*
-unleash-*
+OnlineInstall/
+
+# temp / random dirs dumped by tools
+temp_profile_*/
+system-commandline-*/
+scoped_dir*/
+chrome_drag*/
+Ff2BWf/
+QoRgWO/
+vcxDyT/
+fYBCW7/
+
+# Python junk
+pip-*/
+pyright-*/
+python-*/
+pyvideotrans/
+gen_py/
+
+# Node / npm tool caches
+node-compile-cache/
+node-jiti/
+jiti/
+jna-*/
+
+# Java
+hsperfdata_*/
+
+# VS Code extensions
+ovsx-*/
+remoteIpMoProxy_*/
+
+# Third-party app junk
+APlayerCache/
+Acrobat*/
+Apowersoft/
+baidu*/
+baiduyunguanjia/
+DiagOutputDir/
+Diagnostics/
+gitkraken/
+Lenovo/
+ListSync/
+Low/
+MessagingPlugin/
+NavicatService/
+NvTelemetry*/
+openclaw/
+pub/
+QuarkMini/
+Steam++/
+steam/
+Tencent/
+Thunder*/
+Typora/
+VBE/
+WinGet/
+XL*/
+Xunlei/
+mailmaster_*/
+wmpf_*/
+devin.exe-overflows/
+
+# GUID-named temp dirs
+{*-*-*-*-*}/
 
 # database files
 *.db
@@ -83,13 +153,16 @@ unleash-*
 *.db.ses
 *.db-journal
 
-# random
+# random / other
 *.jpeg
 *.png
 *.jsonl
 ecc-repo/
 geek64.exe
 {*} - OProcSessId.dat
-
-# setup logs
 Setup Log *.txt
+MSI*.LOG
+StructuredQuery.log
+cv_debug.log
+mat-debug-*.log
+unleash-*
