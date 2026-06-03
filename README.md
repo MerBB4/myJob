@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 考编笔记 (Exam Note)
 
-## Getting Started
+结构化知识图谱笔记系统，为考编/公考备考设计。
 
-First, run the development server:
+## 功能
+
+- **4 层知识图谱**：学科 → 章节 → 知识点 → 考点 → 真题
+- **双路径录入**：手动表单 + 截图 OCR 导入
+- **AI 辅助**：OCR 纠错、AI 对话助手
+- **内嵌终端**：xterm.js + node-pty 本地 shell
+
+## 启动
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+# 编辑 .env: DATABASE_URL + AI_API_KEY
+node scripts/terminal-server.mjs   # 终端 WebSocket 后端
+npm run dev                         # Next.js → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+或一键启动：双击 `scripts/start-dev.bat`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 技术栈
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 14 · TypeScript · Prisma/MySQL · shadcn/ui · Zustand · React Query · Tesseract.js · xterm.js + node-pty
